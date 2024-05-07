@@ -31,15 +31,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up kubectl
+      - name: cat
         uses: azure/k8s-set-context@v1
-        with:
-          kubeconfig: ~/.kube/config
-          kubeconfig-data: ${{ secrets.KUBE_CONFIG }}
-      - name: check connection
-        run: |
-          kubectl get pods 
-          kubectl create namespace test
+        run: cat ${{ secrets.KUBE_CONFIG }}
+
+        
+      # - name: Set up kubectl
+      #   uses: azure/k8s-set-context@v1
+      #   with:
+      #     kubeconfig: ~/.kube/config
+      #     kubeconfig-data: ${{ secrets.KUBE_CONFIG }}
+      # - name: check connection
+      #   run: |
+      #     kubectl get pods 
+      #     kubectl create namespace test
           
       # - name: Deploy app
       #   run: |
