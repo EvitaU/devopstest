@@ -51,7 +51,7 @@ jobs:
           sed "s/minikube-ip-address/$MINIKUBE_IP/g" kubernetes/ingress.yaml | kubectl apply -f -
 
       - name: Wait for Ingress Controller
-        run: kubectl wait --for=condition=available deployment/nginx-ingress-controller --timeout=300s -n kube-system
+        run: kubectl wait --for=condition=available deployment/webapp-ingress --timeout=300s -n kube-system
 
       - name: check webapp
         run: curl $MINIKUBE_IP.nip.io
