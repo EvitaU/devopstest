@@ -33,6 +33,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Create Minikube directory
+      run: mkdir -p /home/runner/.minikube/
+      
     - name: Configure kubectl
       run: |
         echo "$CLIENT_CERTIFICATE" | base64 --decode > /home/runner/.minikube/client_certificate.crt
