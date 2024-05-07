@@ -23,7 +23,6 @@ jobs:
           cd web-app
           docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
-          cd ..
 
   deploy:
     needs: build
@@ -48,3 +47,34 @@ jobs:
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
           kubectl apply -f kubernetes/ingress.yaml
+
+      - name: Wait for webapp
+        run: kubectl wait --for=condition=available --timeout=300s deployment/webapp
+        
+      - name: Minikube IP
+        run: MINIKUBE_IP=$(minikube ip)
+        
+      - name: Update DNS
+        run: |
+          curl -X PUT "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/dns_records/${{ secrets.DNS_RECORD_ID }}" \
+           -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+           -H "Content-Type: application/json" \
+           --data '{"type":"A","name":"liveclock.com","content":"'"$MINIKUBE_IP"'","ttl":1,"proxied":false}'
+
+      - name: Check web-app
+        run: |
+          curl http://liveclock.com
+          sleep 100
+  stop:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Stop minikube
+        run: minikube stop
+
+          
+
+          
