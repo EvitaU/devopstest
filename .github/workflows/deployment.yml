@@ -33,7 +33,7 @@ jobs:
 
       - name: create config
         run: |
-            mkdir -p $HOME/.kube
+            mkdir -p ${HOME}/.kube
             echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
             
       - name: Deploy application
