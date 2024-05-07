@@ -28,25 +28,28 @@ jobs:
   deploy:
     # needs: build
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Deploy application
-        run: |
-          kubectl apply -f kubernetes/deployment.yaml
-          kubectl apply -f kubernetes/service.yaml
-          kubectl apply -f kubernetes/ingress.yaml
+    - name: Set up Minikube
+      uses: azure/setup-minikube@v1
+      with:
+        minikube-version: latest
+        kubectl-version: latest
 
-      - name: Set up GitHub Pages
-        run: |
-          git checkout --orphan gh-pages
-          git reset --hard
-          mv build/* ./
-          git add .
-          git commit -m "Deploy to GitHub Pages"
-          git push origin gh-pages --force
-          sleep 120
+    - name: Configure kubectl
+      run: |
+        kubectl config set-cluster minikube --server=https://$MINIKUBE_IP:8443 --certificate-authority=$HOME/.minikube/ca.crt
+        kubectl config set-context minikube --cluster=minikube
+        kubectl config use-context minikube
+
+    - name: Deploy application
+      run: |
+        kubectl apply -f kubernetes/deployment.yaml
+        kubectl apply -f kubernetes/service.yaml
+        kubectl apply -f kubernetes/ingress.yaml
 
 
           
