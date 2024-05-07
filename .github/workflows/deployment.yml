@@ -34,11 +34,13 @@ jobs:
       - name: Set up kubectl
         uses: azure/k8s-set-context@v1
         with:
-          kubeconfig: ~/.kube/config
           kubeconfig-data: ${{ secrets.KUBE_CONFIG }}
           
-      - name: Debug kubeconfig
-        run: cat ~/.kube/config
+      - name: Debug environment
+        run: ls -la ~/.kube
+
+        
+
           
       # - name: Deploy app
       #   run: |
