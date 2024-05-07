@@ -18,14 +18,21 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: build and push
+      - name: Build Docker image
         run: |
           cd web-app
           docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
           cd ..
-      
-      - name: Set up Minikube
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up minikube
         run: |
           curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
           sudo install minikube-linux-amd64 /usr/local/bin/minikube
@@ -38,8 +45,6 @@ jobs:
   
       - name: Deploy application
         run: |
-          kubectl apply -f deployment.yaml --set=spec.template.spec.containers[0].image=${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
+          kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
           kubectl apply -f kubernetes/ingress.yaml
-
-    
