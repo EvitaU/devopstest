@@ -37,6 +37,14 @@ jobs:
           sudo install minikube-linux-amd64 /usr/local/bin/minikube
           minikube start --kubernetes-version='latest'
 
+      - name: Wait for Minikube to start
+        run: |
+          echo "Waiting for Minikube to be ready..."
+          until minikube status | grep -q "Running"; do
+            sleep 5
+          done
+          echo "Minikube is ready!"
+
       - name: Configure kubectl
         run: |
           kubectl config use-context minikube
