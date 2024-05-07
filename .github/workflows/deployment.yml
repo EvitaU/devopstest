@@ -38,10 +38,7 @@ jobs:
         
       - name: Set up kubectl environment variables
         run: |
-          echo "$KUBECONFIG_CONTENT" | base64 -d > kubeconfig.yaml
-          export KUBECONFIG=$(pwd)/kubeconfig.yaml
-        env:
-          KUBECONFIG_CONTENT: ${{ secrets.KUBE_CONFIG }}
+          export KUBECONFIG=$(echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode)
           
       - name: Get pods
         run: kubectl get pods
