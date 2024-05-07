@@ -37,10 +37,11 @@ jobs:
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
           method: kubeconfig
           
-      - name: Debug environment
-        run: ls -la ~/.kube
 
-        
+      - name: check conn
+        run: |
+          kubectl get pods
+          kubectl create namespace test
 
           
       # - name: Deploy app
