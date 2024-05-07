@@ -14,6 +14,7 @@ spec:
     spec:
       containers:
       - name: webapp
-        image: ghcr.io/evitau/webapp:latest
+        image: IMAGE_NAME
         ports:
         - containerPort: 5000
+
