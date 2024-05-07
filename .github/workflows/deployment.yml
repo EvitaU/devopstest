@@ -25,10 +25,21 @@ jobs:
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
           cd ..
       
-      - name: Set up minikube
-        uses: kube-setup-action@v1
-        with:
-          kubernetes-version: 'latest'
-          minikube-version: 'latest'
+      - name: Set up Minikube
+        run: |
+          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          sudo install minikube-linux-amd64 /usr/local/bin/minikube
+          minikube start --kubernetes-version='latest'
+
+      - name: Configure kubectl
+        run: |
+          minikube kubectl -- get pods
+          kubectl config use-context minikube
+  
+      - name: Deploy application
+        run: |
+          kubectl apply -f deployment.yaml --set=spec.template.spec.containers[0].image=${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
+          kubectl apply -f kubernetes/service.yaml
+          kubectl apply -f kubernetes/ingress.yaml
 
     
