@@ -38,8 +38,8 @@ jobs:
 
     - name: check cert
       run: |
-        echo "$CLIENT_CERT" 
-        echo "$CLIENT_CERT" | base64 --decode > /home/runner/.minikube/client_certificate.crt
+        echo "${CLIENT_CERT}" 
+        echo "${CLIENT_CERT}" | base64 --decode > /home/runner/.minikube/client_certificate.crt
         cat /home/runner/.minikube/client_certificate.crt
 
     # - name: Configure kubectl
