@@ -33,11 +33,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Minikube
-      uses: azure/setup-minikube@v1
-      with:
-        minikube-version: latest
-        kubectl-version: latest
+    - name: Install Minikube
+      run: |
+        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        sudo install minikube-linux-amd64 /usr/local/bin/minikube
 
     - name: Configure kubectl
       run: |
