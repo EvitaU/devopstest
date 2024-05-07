@@ -6,52 +6,54 @@ on:
       - main
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-
-  #     - name: Login to Docker Hub
-  #       uses: docker/login-action@v2
-  #       with:
-  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-  #     - name: Build Docker image
-  #       run: |
-  #         cd web-app
-  #         docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
-  #         docker push ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
-
-  deploy:
-    # needs: build
-    runs-on: self-hosted
+  build:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: create config
-        run: |
-            mkdir -p ${HOME}/.kube
-            echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > ${HOME}/.kube/config
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-
-      - name: Decode and write certificates
+      - name: Build Docker image
         run: |
-          echo "${{ secrets.CLIENT_CERT }}" | base64 --decode > /tmp/client.crt
-          echo "${{ secrets.CLIENT_KEY }}" | base64 --decode > /tmp/client.key
-          echo "${{ secrets.CA_CERT }}" | base64 --decode > /tmp/ca.crt
-        
+          cd web-app
+          docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up minikube
+        run: |
+          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          sudo install minikube-linux-amd64 /usr/local/bin/minikube
+          minikube start --kubernetes-version='latest'
+
+      - name: Configure kubectl
+        run: |
+          minikube kubectl -- get pods
+          kubectl config use-context minikube
+  
       - name: Deploy application
         run: |
-          kubectl config use-context minikube
-          kubectl config set-credentials minikube --client-certificate=/tmp/client.crt --client-key=/tmp/client.key
-          kubectl config set-cluster minikube --certificate-authority=/tmp/ca.crt
-          kubectl get pods -A
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
           kubectl apply -f kubernetes/ingress.yaml
 
+      - name: Wait for GitHub Pages to be accessible
+        run: sleep 120  # Wait for 2 minutes
+
+      - name: Open GitHub Pages in browser
+        run: |
+          # Replace 'your-github-username' and 'your-repo-name' with your GitHub username and repository name
+          xdg-open "https://evitau.github.io.github.io/devopstest/"
 
           
