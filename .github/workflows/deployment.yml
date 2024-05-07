@@ -7,23 +7,23 @@ on:
       - gh-pages
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-  #     - name: Login to Docker Hub
-  #       uses: docker/login-action@v2
-  #       with:
-  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  #     - name: Build Docker image
-  #       run: |
-  #         cd web-app
-  #         docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
-  #         docker push ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
+      - name: Build Docker image
+        run: |
+          cd web-app
+          docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
 
   deploy:
     needs: build
