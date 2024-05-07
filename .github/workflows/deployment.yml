@@ -33,8 +33,9 @@ jobs:
 
       - name: create config
         run: |
-            mkdir ${HOME}/.kube
+            mkdir -p $HOME/.kube
             echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
+            
       - name: Deploy application
         run: |
           kubectl config use-context minikube
