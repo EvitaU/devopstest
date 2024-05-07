@@ -52,8 +52,8 @@ jobs:
           
       - name: check webapp
         run: |
-          echo $MINIKUBE_IP
-          curl "$MINIKUBE_IP.nip.io"
+          echo ${MINIKUBE_IP}
+          curl "${MINIKUBE_IP}.nip.io"
 
       - name: Wait for deployment to finish
         run: sleep 180 # Wait for 3 minutes
