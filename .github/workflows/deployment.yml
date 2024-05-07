@@ -31,17 +31,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         
-      - name: Set up kubectl
-        run: |
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig.yaml
-          cat kubeconfig.yaml
-        
       - name: Set up kubectl environment variables
         run: |
           export KUBECONFIG=$(echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode)
           
       - name: Get pods
-        run: kubectl get pods
+        run: |
+          kubectl config use-context minikube
+          kubectl get pods
 
           
       # - name: Deploy app
