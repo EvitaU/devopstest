@@ -49,9 +49,13 @@ jobs:
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
           sed "s/minikube-ip-address/$MINIKUBE_IP/g" kubernetes/ingress.yaml | kubectl apply -f -
-          
+
+      - name: wait for ingress
+        run: kubectl wait --for=condition=ready ingress/webapp-ingress
+        
       - name: check webapp
         run: |
+          export MINIKUBE_IP=$(minikube ip)
           echo ${MINIKUBE_IP}
           curl "${MINIKUBE_IP}.nip.io"
 
