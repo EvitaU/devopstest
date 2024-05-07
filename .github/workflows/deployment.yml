@@ -31,45 +31,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up minikube
-        run: |
-          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-          sudo install minikube-linux-amd64 /usr/local/bin/minikube
-          minikube start --kubernetes-version='latest'
-
-      - name: Wait for Minikube to start
-        run: |
-          echo "Waiting for Minikube to be ready..."
-          until minikube status | grep -q "Running"; do
-            sleep 5
-          done
-          echo "Minikube is ready!"
-
-      - name: Configure kubectl
-        run: |
-          kubectl config use-context minikube
+      - name: Set up kubectl
+        uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ~/.kube/config
+          kubeconfig-data: ${{ secrets.KUBE_CONFIG }}
   
       - name: Deploy to Minikube
         run: |
           # Replace Minikube IP address in Ingress manifest
-          export MINIKUBE_IP=$(minikube ip)
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
-          sed "s/minikube-ip-address/$MINIKUBE_IP/g" kubernetes/ingress.yaml | kubectl apply -f -
+          sed "s/minikube-ip-address/${{ secrets.MINIKUBE_IP}}/g" kubernetes/ingress.yaml | kubectl apply -f -
           kubectl get pods -A
 
-      - name: wait for ingress
-        run: kubectl wait --for=condition=ready ingress/webapp-ingress
-        
-      - name: check webapp
-        run: |
-          export MINIKUBE_IP=$(minikube ip)
-          echo ${MINIKUBE_IP}
-          curl "${MINIKUBE_IP}.nip.io"
-
-      - name: Wait for deployment to finish
-        run: sleep 180 # Wait for 3 minutes
-
-      - name: Display Ingress Rules
-        run: kubectl get ingress
-          
+     
