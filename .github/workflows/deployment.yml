@@ -24,37 +24,24 @@ jobs:
   #         docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
   #         docker push ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
 
-  # deploy:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-
-  #     - name: create config
-  #       run: |
-  #           mkdir -p ${HOME}/.kube
-  #           echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > ${HOME}/.kube/config
-            
-  #     - name: Deploy application
-  #       run: |
-  #         kubectl config use-context minikube
-  #         kubectl apply -f kubernetes/deployment.yaml
-  #         kubectl apply -f kubernetes/service.yaml
-  #         kubectl apply -f kubernetes/ingress.yaml
-
-
-
-  debug-minikube:
-    runs-on: windows-latest
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
     steps:
-    - name: Check.minikube directory
-      run: |
-        if exist "%USERPROFILE%\.minikube" (
-          echo ".minikube directory exists."
-          dir "%USERPROFILE%\.minikube"
-        ) else (
-          echo ".minikube directory does not exist."
-        )
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: create config
+        run: |
+            mkdir -p ${HOME}/.kube
+            echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > ${HOME}/.kube/config
+            
+      - name: Deploy application
+        run: |
+          kubectl config use-context minikube
+          kubectl apply -f kubernetes/deployment.yaml
+          kubectl apply -f kubernetes/service.yaml
+          kubectl apply -f kubernetes/ingress.yaml
+
 
           
