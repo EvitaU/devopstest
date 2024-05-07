@@ -40,6 +40,7 @@ jobs:
       run: |
         echo "$CLIENT_CERTIFICATE" | base64 --decode > /home/runner/.minikube/client_certificate.crt
         echo "$CLIENT_KEY" | base64 --decode > /home/runner/.minikube/client_key.key
+        kubectl get pods
         kubectl config set-cluster minikube --server=https://$MINIKUBE_IP:8443 --certificate-authority=$HOME/.minikube/ca.crt
         kubectl config set-context minikube --cluster=minikube
         kubectl config use-context minikube
