@@ -36,27 +36,21 @@ jobs:
     - name: Create Minikube directory
       run: mkdir -p /home/runner/.minikube/
 
-    - name: check cert
+    - name: Configure kubectl
       run: |
-        echo "${{ secrets.CLIENT_CERT }}" 
-        echo "${{ secrets.CLIENT_CERT }}" | base64 --decode > /home/runner/.minikube/client_certificate.crt
-        cat /home/runner/.minikube/client_certificate.crt
+        echo "${{ secrets.CLIENT_CERT }}"  | base64 --decode > /home/runner/.minikube/client_certificate.crt
+        echo "${{ secrets.CLIENT_KEY }}" | base64 --decode > /home/runner/.minikube/client_key.key
+        kubectl config set-cluster minikube --server=https://${{ secrets.MINIKUBE_IP }}:8443 --certificate-authority=/home/runner/.minikube/client_certificate.crt
+        kubectl config set-credentials minikube --client-certificate=/home/runner/.minikube/client_certificate.crt --client-key=/home/runner/.minikube/client_key.key
+        kubectl config set-context minikube --cluster=minikube --user=minikube
+        kubectl config use-context minikube
+        kubectl get pods
 
-    # - name: Configure kubectl
-    #   run: |
-    #     echo "$CLIENT_CERTIFICATE" | base64 --decode > /home/runner/.minikube/client_certificate.crt
-    #     echo "$CLIENT_KEY" | base64 --decode > /home/runner/.minikube/client_key.key
-    #     kubectl config set-cluster minikube --server=https://$MINIKUBE_IP:8443 --certificate-authority=/home/runner/.minikube/client_certificate.crt
-    #     kubectl config set-credentials minikube --client-certificate=/home/runner/.minikube/client_certificate.crt --client-key=/home/runner/.minikube/client_key.key
-    #     kubectl config set-context minikube --cluster=minikube --user=minikube
-    #     kubectl config use-context minikube
-    #     kubectl get pods
-
-    # - name: Deploy application
-    #   run: |
-    #     kubectl apply -f kubernetes/deployment.yaml
-    #     kubectl apply -f kubernetes/service.yaml
-    #     kubectl apply -f kubernetes/ingress.yaml
+    - name: Deploy application
+      run: |
+        kubectl apply -f kubernetes/deployment.yaml
+        kubectl apply -f kubernetes/service.yaml
+        kubectl apply -f kubernetes/ingress.yaml
 
 
           
