@@ -39,19 +39,21 @@ jobs:
 
       - name: Configure kubectl
         run: |
-          minikube kubectl -- get pods
+          kubectl get pods -A
           kubectl config use-context minikube
   
       - name: Deploy to Minikube
         run: |
           # Replace Minikube IP address in Ingress manifest
           export MINIKUBE_IP=$(minikube ip)
-          echo $MINIKUBE_IP
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
           sed "s/minikube-ip-address/$MINIKUBE_IP/g" kubernetes/ingress.yaml | kubectl apply -f -
+          
       - name: check webapp
-        run: curl "$MINIKUBE_IP.nip.io"
+        run: |
+          echo $MINIKUBE_IP
+          curl "$MINIKUBE_IP.nip.io"
 
       - name: Wait for deployment to finish
         run: sleep 180 # Wait for 3 minutes
