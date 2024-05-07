@@ -36,11 +36,12 @@ jobs:
           echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig.yaml
           cat kubeconfig.yaml
         
-      - name: Set up kubectl context
-        uses: azure/k8s-set-context@v1
-        with:
-          kubeconfig: kubeconfig.yaml
-          method: kubeconfig
+      - name: Set up kubectl environment variables
+        run: |
+          echo "$KUBECONFIG_CONTENT" | base64 -d > kubeconfig.yaml
+          export KUBECONFIG=$(pwd)/kubeconfig.yaml
+        env:
+          KUBECONFIG_CONTENT: ${{ secrets.KUBE_CONFIG }}
           
       - name: Get pods
         run: kubectl get pods
