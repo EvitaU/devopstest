@@ -17,4 +17,3 @@ spec:
         image: eviud/webapp:latest
         ports:
         - containerPort: 5000
-
