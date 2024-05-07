@@ -3,7 +3,7 @@ name: Deploy on minikube
 on:
   push:
     branches:
-    - main
+      - main
 
 jobs:
   build:
@@ -41,6 +41,3 @@ jobs:
           kubectl apply -f deployment.yaml --set=spec.template.spec.containers[0].image=${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
           kubectl apply -f kubernetes/service.yaml
           kubectl apply -f kubernetes/ingress.yaml
-
-          
-        
