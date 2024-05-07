@@ -2,9 +2,12 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: webapp-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
 spec:
   rules:
-  - http:
+  - host: liveclock.com
+    http:
       paths:
       - path: /
         pathType: Prefix
@@ -12,4 +15,4 @@ spec:
           service:
             name: webapp-service
             port:
-              number: 80
+              number: 5000
