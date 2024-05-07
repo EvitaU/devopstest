@@ -32,16 +32,15 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Set up kubectl
+        run: echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig.yaml
+      - name: Set up kubectl context
         uses: azure/k8s-set-context@v1
         with:
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+          kubeconfig: kubeconfig.yaml
           method: kubeconfig
           
-
-      - name: check conn
-        run: |
-          kubectl get pods
-          kubectl create namespace test
+      - name: Get pods
+        run: kubectl get pods
 
           
       # - name: Deploy app
