@@ -26,32 +26,30 @@ jobs:
   #         docker push ${{ secrets.DOCKERHUB_USERNAME }}/webapp:latest
 
   deploy:
-    # needs: build
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout Repository
       uses: actions/checkout@v2
-
-    - name: Create Minikube directory
-      run: mkdir -p /home/runner/.minikube/
-
-    - name: Configure kubectl
+    
+    - name: Set up k3s
+      uses: steebchen/k3s-action@v0.0.4
+      with:
+        k3s_version: latest
+        kubectl_version: latest
+    
+    - name: Load Docker image into k3s
       run: |
-        echo "${{ secrets.CLIENT_CERT }}"  | base64 --decode > /home/runner/.minikube/client_certificate.crt
-        echo "${{ secrets.CLIENT_KEY }}" | base64 --decode > /home/runner/.minikube/client_key.key
-        kubectl config set-cluster minikube --server=https://${{ secrets.MINIKUBE_IP }}:8443 --certificate-authority=/home/runner/.minikube/client_certificate.crt
-        kubectl config set-credentials minikube --client-certificate=/home/runner/.minikube/client_certificate.crt --client-key=/home/runner/.minikube/client_key.key
-        kubectl config set-context minikube --cluster=minikube --user=minikube
-        kubectl config use-context minikube
-        kubectl create namespace test
-        kubectl get pods
-
+        docker save ${{ secrets.DOCKERHUB_USERNAME }}/webapp | gzip | k3s ctr images import -
+    
     - name: Deploy application
-      run: |
-        kubectl apply -f kubernetes/deployment.yaml
-        kubectl apply -f kubernetes/service.yaml
-        kubectl apply -f kubernetes/ingress.yaml
-
+      run: kubectl apply -f deployment.yaml
+    
+    - name: Expose service
+      run: kubectl expose deployment webapp --type=LoadBalancer --port=80 --target-port=5000
+    
+    - name: Sleep for 5 minutes
+      run: sleep 300
 
           
