@@ -26,32 +26,26 @@ jobs:
 
   deploy:
     # needs: build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: create config
-        run: |
-            mkdir -p ${HOME}/.kube
-            echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > ${HOME}/.kube/config
-
-
-      - name: Decode and write certificates
-        run: |
-          echo "${{ secrets.CLIENT_CERT }}" | base64 --decode > /tmp/client.crt
-          echo "${{ secrets.CLIENT_KEY }}" | base64 --decode > /tmp/client.key
-          echo "${{ secrets.CA_CERT }}" | base64 --decode > /tmp/ca.crt
-        
       - name: Deploy application
         run: |
-          kubectl config use-context minikube
-          kubectl config set-credentials minikube --client-certificate=/tmp/client.crt --client-key=/tmp/client.key
-          kubectl config set-cluster minikube --certificate-authority=/tmp/ca.crt
-          kubectl get pods -A
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
           kubectl apply -f kubernetes/ingress.yaml
+
+      - name: Set up GitHub Pages
+        run: |
+          git checkout --orphan gh-pages
+          git reset --hard
+          mv build/* ./
+          git add .
+          git commit -m "Deploy to GitHub Pages"
+          git push origin gh-pages --force
+          sleep 120
 
 
           
