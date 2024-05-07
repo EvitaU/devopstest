@@ -1,12 +1,19 @@
-apiVersion: v1
-kind: Service
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: webapp
 spec:
-  type: LoadBalancer
-  ports:
-  - port: 80
-    targetPort: 5000
+  replicas: 1
   selector:
-    app: webapp
-
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: eviud/webapp:latest
+        ports:
+        - containerPort: 5000
