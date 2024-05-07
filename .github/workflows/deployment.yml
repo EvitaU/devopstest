@@ -30,9 +30,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        
+
+      - name: create config
+        run: |
+            mkdir ${HOME}/.kube
+            echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
       - name: Deploy application
         run: |
+          kubectl config use-context minikube
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
           kubectl apply -f kubernetes/ingress.yaml
