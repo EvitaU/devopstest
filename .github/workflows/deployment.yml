@@ -33,7 +33,6 @@ jobs:
 
       - name: Configure kubectl
         run: |
-          minikube kubectl -- get pods
           kubectl config use-context minikube
   
       - name: Deploy application
