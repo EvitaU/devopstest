@@ -33,6 +33,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Extract Minikube CA certificate
+      run: |
+        minikube ssh cat /etc/kubernetes/ca.crt > /home/runner/.minikube/ca.crt
+        
     - name: Configure kubectl
       run: |
         kubectl config set-cluster minikube --server=https://$MINIKUBE_IP:8443 --certificate-authority=$HOME/.minikube/ca.crt
