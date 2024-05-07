@@ -33,11 +33,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install Minikube
-      run: |
-        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-        sudo install minikube-linux-amd64 /usr/local/bin/minikube
-
     - name: Configure kubectl
       run: |
         kubectl config set-cluster minikube --server=https://$MINIKUBE_IP:8443 --certificate-authority=$HOME/.minikube/ca.crt
