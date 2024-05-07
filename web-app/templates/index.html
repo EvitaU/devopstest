@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Clock</title>
+    <script>
+        function updateTime() {
+            var currentTimeElement = document.getElementById('current-time');
+            var now = new Date();
+            var formattedTime = now.getFullYear() + '-' +
+                                ('0' + (now.getMonth() + 1)).slice(-2) + '-' +
+                                ('0' + now.getDate()).slice(-2) + ' ' +
+                                ('0' + now.getHours()).slice(-2) + ':' +
+                                ('0' + now.getMinutes()).slice(-2) + ':' +
+                                ('0' + now.getSeconds()).slice(-2);
+            currentTimeElement.innerHTML = formattedTime;
+        }
+
+        // Update the time every second
+        setInterval(updateTime, 1000);
+    </script>
+</head>
+<body>
+    <center> <!-- Center-align the clock -->
+        <h1>Current Time</h1>
+        <p id="current-time">{{ current_time }}</p>
+    </center>
+</body>
+</html>
