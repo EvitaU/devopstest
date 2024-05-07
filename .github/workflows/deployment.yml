@@ -35,7 +35,14 @@ jobs:
         run: |
             mkdir -p ${HOME}/.kube
             echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > ${HOME}/.kube/config
-            
+
+
+      - name: Decode and write certificates
+        run: |
+          echo "${{ secrets.CLIENT_CERT }}" | base64 --decode > /tmp/client.crt
+          echo "${{ secrets.CLIENT_KEY }}" | base64 --decode > /tmp/client.key
+          echo "${{ secrets.CA_CERT }}" | base64 --decode > /tmp/ca.crt
+        
       - name: Deploy application
         run: |
           kubectl config use-context minikube
