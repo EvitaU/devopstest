@@ -44,10 +44,7 @@ jobs:
           KUBECONFIG_CONTENT: ${{ secrets.KUBE_CONFIG }}
           
       - name: Get pods
-        run: |
-          curl -k https://192.168.49.2:8443
-          ping -c 1 192.168.49.2
-          kubectl get pods
+        run: kubectl get pods
 
           
       # - name: Deploy app
