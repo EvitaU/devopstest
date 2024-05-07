@@ -39,7 +39,6 @@ jobs:
 
       - name: Configure kubectl
         run: |
-          kubectl get pods -A
           kubectl config use-context minikube
   
       - name: Deploy to Minikube
@@ -49,6 +48,7 @@ jobs:
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
           sed "s/minikube-ip-address/$MINIKUBE_IP/g" kubernetes/ingress.yaml | kubectl apply -f -
+          kubectl get pods -A
 
       - name: wait for ingress
         run: kubectl wait --for=condition=ready ingress/webapp-ingress
