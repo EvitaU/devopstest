@@ -45,6 +45,7 @@ jobs:
           
       - name: Get pods
         run: |
+          curl  192.168.49.2:8443
           ping -c 1 192.168.49.2
           kubectl get pods
 
