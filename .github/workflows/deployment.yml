@@ -48,6 +48,7 @@ jobs:
           kubectl config use-context minikube
           kubectl config set-credentials minikube --client-certificate=/tmp/client.crt --client-key=/tmp/client.key
           kubectl config set-cluster minikube --certificate-authority=/tmp/ca.crt
+          kubectl get pods -A
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
           kubectl apply -f kubernetes/ingress.yaml
