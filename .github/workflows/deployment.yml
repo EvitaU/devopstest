@@ -36,13 +36,17 @@ jobs:
         with:
           kubeconfig: ~/.kube/config
           kubeconfig-data: ${{ secrets.KUBE_CONFIG }}
-  
-      - name: Deploy app
+      - name: check connection
         run: |
-          # Replace Minikube IP address in Ingress manifest
-          kubectl apply -f kubernetes/deployment.yaml
-          kubectl apply -f kubernetes/service.yaml
-          # sed "s/minikube-ip-address/${{ secrets.MINIKUBE_IP}}/g" kubernetes/ingress.yaml | kubectl apply -f -
-          kubectl get pods -A
+          kubectl get pods 
+          kubectl create namespace test
+          
+      # - name: Deploy app
+      #   run: |
+      #     # Replace Minikube IP address in Ingress manifest
+      #     kubectl apply -f kubernetes/deployment.yaml
+      #     kubectl apply -f kubernetes/service.yaml
+      #     # sed "s/minikube-ip-address/${{ secrets.MINIKUBE_IP}}/g" kubernetes/ingress.yaml | kubectl apply -f -
+      #     kubectl get pods -A
 
      
