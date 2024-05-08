@@ -33,11 +33,12 @@ jobs:
         
       - name: Set up kubectl environment variables
         run: |
-          export KUBECONFIG=$(echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode)
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig.yaml
+          export KUBECONFIG=kubeconfig.yaml
           
       - name: Get pods
         run: |
-          kubectl get pods
+          kubectl --kubeconfig=kubeconfig.yaml get pods
 
           
       # - name: Deploy app
