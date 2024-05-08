@@ -37,7 +37,6 @@ jobs:
           
       - name: Get pods
         run: |
-          kubectl config use-context minikube
           kubectl get pods
 
           
